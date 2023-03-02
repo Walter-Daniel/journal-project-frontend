@@ -1,4 +1,4 @@
-import { checkingCredentials } from "./authSlice"
+import { checkingCredentials, login } from "./authSlice"
 
 
 export const checkingAuthentication = ( email, password ) => {
@@ -13,6 +13,8 @@ export const StartGoogleSignIn = ( ) => {
     return async( dispatch ) => {
 
         dispatch( checkingCredentials() );
+        
+        dispatch( login() )
 
     }
 }
