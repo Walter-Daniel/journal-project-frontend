@@ -2,19 +2,35 @@ import { Google } from '@mui/icons-material';
 import { Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
-import { useForm } from '../../hooks/useForm';
 import { checkingAuthentication, StartGoogleSignIn } from '../../store/auth/thunk';
+
+
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
+
 import { AuthLayout } from '../layout/AuthLayout';
+
+const passwordPattern =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+
+const schema = yup.object().shape({             
+  email: yup.string()
+                .required('Campo requerido')
+                .max(30, 'El email debe tener un max. de 30 carácteres')               
+                .email('El email no es válido'),
+  password: yup.string()
+                .required('Campo requerido')
+                .min(6, 'La contraseña debe tener un min. 6 caracteres')
+                .max(12, 'La contraseña debe tener un max. de 12 caracteres')
+                .matches(passwordPattern, 'La contraseña debe contener por lo menos una letra mayúscula, una minúscula, un número y un caracter especial.')
+}).required();
 
 export const LoginPage = () => {
 
   const dispatch = useDispatch();
 
-  const { email, password, onInputChange } = useForm({
-    email: 'walter@email.com',
-    password: '123456'
-
-  });
+  const { control, handleSubmit, formState:{ errors } } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -29,32 +45,49 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout title='Login'>
-      <form onSubmit={ onSubmit } >
+      <form onSubmit={handleSubmit(onSubmit)} >
           <Grid container>
 
             <Grid item xs={ 12 } sx={{ mt: 2 }}>
 
-              <TextField 
-                label="Correo" 
-                type="email" 
-                placeholder='correo@mail.com'
-                fullWidth
+            <Controller
                 name="email"
-                value={ email }
-                onChange={ onInputChange }
-              />
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    label="Correo" 
+                    fullWidth
+                    name='email'
+                    placeholder='martin@email'
+                    error={Boolean(errors.email)}
+                    helperText={errors.email?.message}
+                    {...field}
+                  />
+                  
+                )}
+            />
+
             </Grid>
 
             <Grid item xs={ 12 } sx={{ mt: 2 }}>
-
-              <TextField 
-                label="Contraseña" 
-                type="password" 
-                placeholder='contraseña'
-                fullWidth
-                name='password'
-                value={ password }
-                onChange={ onInputChange }
+              
+            <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    label="Contraseña" 
+                    type="password" 
+                    placeholder='contraseña'
+                    fullWidth
+                    name='password'
+                    error={Boolean(errors.password)}
+                    helperText={errors.password?.message}
+                    {...field}
+                  />
+                )}
               />
 
             </Grid>
