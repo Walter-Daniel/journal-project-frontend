@@ -1,3 +1,3 @@
 
 
-export * as journalApi from './journalApi';
+export { default as journalApi } from './journalApi';

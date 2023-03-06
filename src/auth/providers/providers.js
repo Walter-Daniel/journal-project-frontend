@@ -6,6 +6,7 @@ export const registerWithEmail = async( { name, surname, email, password } ) => 
 
         
     } catch (error) {
+        console.log(error)
         return { 
             ok: false, errorMessage: error.message
           }

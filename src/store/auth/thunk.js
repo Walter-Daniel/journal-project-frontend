@@ -18,3 +18,16 @@ export const StartGoogleSignIn = ( ) => {
 
     }
 }
+
+export const startEmailSignIn = ( { email, password, name, surname } ) => {
+    return async( dispatch ) => {
+
+        dispatch( checkingCredentials() );
+        
+        dispatch( login() )
+
+    }
+}
+
+
+

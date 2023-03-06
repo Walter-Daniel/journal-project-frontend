@@ -10,6 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 import { AuthLayout } from '../layout/AuthLayout';
+import { useAuthStore } from '../../hooks';
 
 const passwordPattern =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -30,12 +31,18 @@ export const LoginPage = () => {
 
   const dispatch = useDispatch();
 
+  const { startLogin } = useAuthStore();
+
   const { control, handleSubmit, formState:{ errors } } = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmit = (event) => {
-    event.preventDefault();
-    console.log({ email, password })
-    dispatch( checkingAuthentication() );
+  const onSubmit = (data) => {
+    
+   
+    // console.log({ email, password });
+    startLogin(data);
+  
+    
+  
   };
 
   const onGoogleSignIn = () => {
