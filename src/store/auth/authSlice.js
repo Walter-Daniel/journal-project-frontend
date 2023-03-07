@@ -30,16 +30,23 @@ export const authSlice = createSlice({
       state.errorMessage = undefined;
     },
 
-    logout: ( state ) => {
+    logout: ( state, {payload} ) => {
       state.status= 'non-authenticated'; //not-authenticated, 'authenticated,
+      state.user= {};
+      state.errorMessage = payload;
       // state.id= null;
       // state.email= null;
       // state.name= null;
       // state.surnamename= null;
       // state.photoURL= null;
       // state.errorMessage= payload.errorMessage;
-    }  
+    },
+    
+    clearErrorMsg: ( state ) => {
+      state.errorMessage = undefined;
+    }
+    
   },
 })
 
-export const { login, logout, checkingCredentials } = authSlice.actions
+export const { login, logout, checkingCredentials, clearErrorMsg } = authSlice.actions

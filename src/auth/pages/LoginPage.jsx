@@ -11,6 +11,8 @@ import * as yup from "yup";
 
 import { AuthLayout } from '../layout/AuthLayout';
 import { useAuthStore } from '../../hooks';
+import { useEffect } from 'react';
+import Swal from 'sweetalert2';
 
 const passwordPattern =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -31,24 +33,26 @@ export const LoginPage = () => {
 
   const dispatch = useDispatch();
 
-  const { startLogin } = useAuthStore();
+  const { startLogin, errorMessage } = useAuthStore();
 
   const { control, handleSubmit, formState:{ errors } } = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmit = (data) => {
-    
-   
+  const onSubmit = ( { email, password }  ) => {
     // console.log({ email, password });
-    startLogin(data);
-  
-    
-  
+    startLogin({ email, password });
   };
 
   const onGoogleSignIn = () => {
     console.log('onGoogleSignIn');
     dispatch( StartGoogleSignIn() );
-  }
+  };
+
+  useEffect(() => {
+    if( errorMessage !== undefined ) {
+      Swal.fire('Error en la autenticación', errorMessage, 'error')
+    }
+  }, [errorMessage])
+  
 
   return (
     <AuthLayout title='Login'>
