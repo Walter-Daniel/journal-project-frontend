@@ -2,7 +2,7 @@ import { Google } from '@mui/icons-material';
 import { Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
-import { checkingAuthentication, StartGoogleSignIn } from '../../store/auth/thunk';
+import { StartGoogleSignIn } from '../../store/auth/thunk';
 
 
 import { useForm, Controller } from "react-hook-form";
@@ -38,7 +38,6 @@ export const LoginPage = () => {
   const { control, handleSubmit, formState:{ errors } } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = ( { email, password }  ) => {
-    // console.log({ email, password });
     startLogin({ email, password });
   };
 

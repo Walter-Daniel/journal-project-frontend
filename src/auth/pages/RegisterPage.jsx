@@ -5,6 +5,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { AuthLayout } from '../layout/AuthLayout';
 
+import { useEffect } from 'react';
+import { useAuthStore } from '../../hooks';
+import Swal from 'sweetalert2';
+
 
 const namePattern = /^[a-zA-ZÀ-ÿ\s]{1,40}$/;
 const passwordPattern =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -37,11 +41,22 @@ const schema = yup.object().shape({
 
 export const RegisterPage = () => {
 
-  const { control, handleSubmit, formState:{ errors } } = useForm({
+  const { control, handleSubmit, formState:{ errors }, reset } = useForm({
     resolver: yupResolver(schema)
   });
-  const onSubmit = data => console.log(data);
 
+  const { startRegister, errorMessage } = useAuthStore();
+
+  const onSubmit = ( {name, surname, email, password} ) => {
+    startRegister({ name, surname, email, password });
+  };
+
+  useEffect(() => {
+    if( errorMessage !== undefined ) {
+      Swal.fire('Error en el Registro', errorMessage, 'error')
+    }
+  }, [errorMessage]);
+  
  
   return (
     <AuthLayout title='Register'>
