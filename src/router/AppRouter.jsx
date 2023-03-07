@@ -1,25 +1,33 @@
 
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { CheckingAuth } from "../../ui/components/CheckingAuth";
 
 import { AuthRoutes } from '../auth/routes/AuthRoutes';
+import { useAuthStore } from "../hooks";
 import { JournalRoutes } from '../journal/routes/JournalRoutes';
 
 export const AppRouter = () => {
-  const { status  } = useSelector( state => state.auth );
+
+  const { checkAuthToken, status  } = useAuthStore();
+
+  useEffect(() => {
+    checkAuthToken()
+  }, []);
 
   if( status === 'checking' ) {
     return <CheckingAuth />
-  }
+  };
+
   return (
     <>
         <Routes>
-            <Route path='/auth/*' element={ <AuthRoutes /> } />
-
-            <Route path='/*' element={ <JournalRoutes /> } />
-            
+            { 
+              (status === 'authenticated')     
+                ?<Route path='/*' element={ <JournalRoutes /> } />
+                :<Route path='/auth/*' element={ <AuthRoutes /> } />
+            }
+            <Route path='/*' element={ <Navigate to='/auth/login' /> } />    
         </Routes>
     
     </>

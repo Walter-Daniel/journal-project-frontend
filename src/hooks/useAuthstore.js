@@ -60,8 +60,7 @@ export const useAuthStore = () => {
 
     const checkAuthToken = async() => {
         const token = localStorage.getItem('token');
-        if (!token) return dispatch( logout('La sesión a expirado') );
-
+        if (!token) return dispatch( logout() );
         try {
             const {} = await journalApi.get('/auth/renew');
             localStorage.setItem('token', data.token);
@@ -69,6 +68,7 @@ export const useAuthStore = () => {
             dispatch(
                 login({
                     name: data.name,
+                    surname: data.surname,
                     id: data.id
                 }) 
             );
@@ -76,7 +76,11 @@ export const useAuthStore = () => {
             localStorage.clear();
             dispatch( logout() );
         }
+    };
 
+    const startLogout = () => {
+        localStorage.clear();
+        dispatch( logout() );
     }
 
     return {
@@ -88,6 +92,7 @@ export const useAuthStore = () => {
         //Metodos
         startLogin,
         startRegister,
-        checkAuthToken
+        checkAuthToken,
+        startLogout
     }
 }

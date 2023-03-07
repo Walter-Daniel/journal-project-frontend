@@ -1,7 +1,11 @@
-import { TurnedInNot } from "@mui/icons-material"
-import { Box, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
+import { useAuthStore } from "../../hooks/useAuthStore";
+import { TurnedInNot } from "@mui/icons-material";
+import { Box, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
 
 export const SideBar = ({ drawerWidth }) => {
+
+  const { user } = useAuthStore();
+
   return (
     <Box
         component='nav'
@@ -17,7 +21,7 @@ export const SideBar = ({ drawerWidth }) => {
       >
         <Toolbar>
           <Typography variant='h6' noWrap component='div' >
-            Walter Daniel Carrizo
+          { user.name }
           </Typography>
         </Toolbar>
         <Divider />
