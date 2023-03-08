@@ -27,6 +27,7 @@ export const useAuthStore = () => {
                     id: data.id
                 }) 
             );
+            Swal.fire(`Hola ${ data.name }`, 'te damos la bienvenida!!!', 'success')
             
 
         } catch (error) {
@@ -62,7 +63,7 @@ export const useAuthStore = () => {
         const token = localStorage.getItem('token');
         if (!token) return dispatch( logout() );
         try {
-            const {} = await journalApi.get('/auth/renew');
+            const { data } = await journalApi.get('/auth/renew');
             localStorage.setItem('token', data.token);
             localStorage.setItem('token-init-date', new Date().getTime());
             dispatch(
@@ -81,7 +82,7 @@ export const useAuthStore = () => {
     const startLogout = () => {
         localStorage.clear();
         dispatch( logout() );
-    }
+    };
 
     return {
         // Propiedades

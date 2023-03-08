@@ -10,6 +10,7 @@ export const NavBar = ({ drawerWidth }) => {
   return (
     <AppBar 
         position="fixed"
+        className="animate__animated animate__fadeIn animate__faster"
         sx={{ 
             width: { sm: `calc(100% - ${ drawerWidth }px)` },
             ml: { sm: `${ drawerWidth }` }

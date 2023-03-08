@@ -12,6 +12,7 @@ export const JournalPage = () => {
       <NothingSelectedView />
       {/* <NoteView /> */}
       <IconButton
+        className="animate__animated animate__fadeIn"
         size='large'
         sx={{
           color: 'white',

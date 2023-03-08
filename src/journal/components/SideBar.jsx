@@ -9,6 +9,7 @@ export const SideBar = ({ drawerWidth }) => {
   return (
     <Box
         component='nav'
+        className="animate__animated animate__fadeIn animate__faster"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
     >
       <Drawer
