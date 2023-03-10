@@ -3,6 +3,7 @@ import journalApi from '../api/journalApi';
 import { checkingCredentials, clearErrorMsg, login, logout } from '../store/auth/authSlice';
 
 import Swal from 'sweetalert2';
+import { startLoadingNotes } from '../store/journal/thunk';
 
 
 
@@ -74,6 +75,7 @@ export const useAuthStore = () => {
                     id: data.id
                 }) 
             );
+            dispatch( startLoadingNotes() );
         } catch (error) {
             localStorage.clear();
             dispatch( logout() );
