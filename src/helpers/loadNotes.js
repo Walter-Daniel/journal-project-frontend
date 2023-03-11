@@ -1,11 +1,12 @@
 import journalApi from "../api/journalApi";
 
-export const LoadNotes = async() => {  
+export const LoadNotes = async(id) => {  
 
-    const { data } = await journalApi.get('/notes');
-   
-    data.notes.forEach(element => {
-        console.log(element)
-    });
+    try {
+        const { data } = await journalApi.get(`/notes/${id}`);
+        return data.notes
+    } catch (error) {
+        console.log('error al obtener las notas')
+    }
     
 }

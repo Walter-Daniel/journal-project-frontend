@@ -30,7 +30,7 @@ export const startLoadingNotes = () => {
     return async( dispatch, getState ) => {
 
         const { id } = getState().auth.user
-        console.log({id})
-        await LoadNotes();
+        const notes = await LoadNotes( id );
+        dispatch( setNote( notes ) )
     }
 }
