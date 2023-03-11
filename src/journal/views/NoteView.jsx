@@ -1,9 +1,36 @@
-import { SaveOutlined } from "@mui/icons-material"
-import { Button, Grid, TextField, Typography } from "@mui/material"
-import { ImgGallery } from "../components"
+import { useDispatch, useSelector } from 'react-redux';
+import { DeleteOutline, SaveOutlined } from "@mui/icons-material";
+import { Button, Grid, TextField, Typography, IconButton } from "@mui/material";
+import { useMemo, useRef, useEffect } from "react";
+import { ImgGallery } from "../components";
+import { useForm } from '../../hooks/useForm';
+import { setActiveNote } from '../../store/journal/journalSlice';
+import { StartSaveNote } from '../../store/journal/thunk';
 
 
 export const NoteView = () => {
+
+    const dispatch = useDispatch();
+    const { active:note, messageSaved, isSaving } = useSelector( state => state.journal );
+    const { body, title, date, onInputChange, formState } = useForm( note );
+
+
+    const dateString = useMemo(() => {
+        const newDate = new Date( date );
+        return newDate.toUTCString(); 
+    },[date]);
+
+    const fileInputRef = useRef();
+
+    useEffect(() => {
+        dispatch( setActiveNote(formState) )
+    }, [formState]);
+
+    const onSaveNote = () => {
+        dispatch( StartSaveNote() )
+    }
+    
+
   return (
     <Grid 
         container
@@ -13,10 +40,21 @@ export const NoteView = () => {
         sx={{ mb:1 }}
         >
             <Grid item>
-                <Typography fontSize={ 39 } fontWeight='light'> 28 de Febrero, 2023 </Typography>
+                <Typography fontSize={ 39 } fontWeight='light'>{ dateString }</Typography>
             </Grid>
             <Grid item>
-                <Button color="primary" sx={{ padding: 2 }}>
+                <input 
+                    type="file"
+                    multiple
+                    ref={ fileInputRef }
+                    // onChange={ onFileInputChange }
+                    style={{ display: 'none' }}
+                />
+                <Button 
+                        color="primary" 
+                        sx={{ padding: 2 }}
+                        onClick= { onSaveNote }
+                        >
                     <SaveOutlined sx={{ fontSize: 30, mr: 1 }}/>
                     <Typography>
                         Guardar
@@ -31,6 +69,9 @@ export const NoteView = () => {
                     fullWidth
                     placeholder="Ingrese un título"
                     label="Título"
+                    name="title"
+                    value={ title }
+                    onChange={ onInputChange }
                     sx={{ border: 'none', mb: 1 }}
                 />
 
@@ -41,8 +82,23 @@ export const NoteView = () => {
                     fullWidth
                     placeholder="¿Qué sucedió el día de hoy?"
                     minRows={ 5 }
+                    name="body"
+                    value={ body }
+                    onChange={ onInputChange }
                 />
             </Grid>
+
+            <Grid container justifyContent='end'>
+                <Button
+                    // onClick={ onDelete }
+                    sx={{ mt: 2 }}
+                    color="error"
+                >
+                    <DeleteOutline />
+                    Borrar
+                </Button>
+            </Grid>
+
 
             <ImgGallery />
 
