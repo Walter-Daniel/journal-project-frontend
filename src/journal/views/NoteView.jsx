@@ -16,8 +16,11 @@ export const NoteView = () => {
 
 
     const dateString = useMemo(() => {
-        const newDate = new Date( date );
-        return newDate.toUTCString(); 
+        const newDate = new Date( date )
+        const options = {weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric"};
+        // return newDate.toUTCString('es-Ar'); 
+        return newDate.toLocaleDateString('es-AR', options).toLocaleUpperCase()
+        ; 
     },[date]);
 
     const fileInputRef = useRef();

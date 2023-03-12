@@ -12,6 +12,7 @@ import { LoadNotes } from '../../helpers/loadNotes';
 import journalApi from '../../api/journalApi';
 
 export const startNewNote = () => {
+    
     return async( dispatch, getState ) => {
 
         dispatch( savingNewNote() );
@@ -45,6 +46,11 @@ export const StartSaveNote = () => {
             const { active:note } = getState().journal;
             const noteToBackend = { ...note };
             const idNoteActive = note.id
+            if(!idNoteActive )  {
+                const newNote = await journalApi.post(`/notes`, note);
+                dispatch( updateNote( note ) );
+                return newNote
+            }
             delete noteToBackend.id;
             const { data } = await journalApi.put(`/notes/${idNoteActive}`, noteToBackend);
             console.log(data);
