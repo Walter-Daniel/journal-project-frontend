@@ -14,6 +14,14 @@ export const SideBarItem = ({ title, body, id, date, imageUrls = [] }) => {
         : title;
   }, [ title ]);
 
+  const dateString = useMemo(() => {
+    const newDate = new Date( date )
+    const options = {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric"};
+    // return newDate.toUTCString('es-Ar'); 
+    return newDate.toLocaleDateString('es-AR', options)
+    ; 
+},[date]);
+
   const onClickNote = () => {
     dispatch( setActiveNote({ title, body, id, date, imageUrls }) );
   };
@@ -26,7 +34,7 @@ export const SideBarItem = ({ title, body, id, date, imageUrls = [] }) => {
           </ListItemIcon>
           <Grid container>
             <ListItemText  primary={ newTitle } />
-            <ListItemText secondary={ date } />
+            <ListItemText secondary={ dateString } />
           </Grid>
         </ListItemButton>
     </ListItem>
