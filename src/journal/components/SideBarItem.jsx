@@ -8,6 +8,10 @@ export const SideBarItem = ({ title, body, id, date, imageUrls = [] }) => {
 
   const dispatch = useDispatch();
 
+  const onClickNote = () => {
+    dispatch( setActiveNote({ title, body, id, date, imageUrls }) );
+  };
+
   const newTitle = useMemo( () => {
     return title.length > 17
         ? title.substring(0,17) + '...'
@@ -17,14 +21,11 @@ export const SideBarItem = ({ title, body, id, date, imageUrls = [] }) => {
   const dateString = useMemo(() => {
     const newDate = new Date( date )
     const options = {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric"};
-    // return newDate.toUTCString('es-Ar'); 
     return newDate.toLocaleDateString('es-AR', options)
     ; 
 },[date]);
 
-  const onClickNote = () => {
-    dispatch( setActiveNote({ title, body, id, date, imageUrls }) );
-  };
+  
 
   return (
     <ListItem key={ id } disablePadding >

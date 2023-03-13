@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'
 
 import { addNewEmptyNote,
     setActiveNote,
@@ -10,17 +10,25 @@ import { addNewEmptyNote,
 import Swal from 'sweetalert2';
 import { LoadNotes } from '../../helpers/loadNotes';
 import journalApi from '../../api/journalApi';
+import { useId } from 'react';
+
+
 
 export const startNewNote = () => {
+
+    
     
     return async( dispatch, getState ) => {
+
+        
 
         dispatch( savingNewNote() );
 
         const newNote = {
             title: '',
             body: '',
-            date: new Date().getTime()
+            date: new Date().getTime(),
+            id: new Date().getTime()
         };
 
         dispatch( addNewEmptyNote( newNote ) );
@@ -46,7 +54,7 @@ export const StartSaveNote = () => {
             const { active:note } = getState().journal;
             const noteToBackend = { ...note };
             const idNoteActive = note.id
-            if(!idNoteActive )  {
+            if( idNoteActive === note.date)  {
                 const newNote = await journalApi.post(`/notes`, note);
                 dispatch( updateNote( note ) );
                 return newNote
