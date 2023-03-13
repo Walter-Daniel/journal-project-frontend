@@ -1,11 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { DeleteOutline, SaveOutlined } from "@mui/icons-material";
+import { DeleteOutline, SaveOutlined, UploadOutlined } from "@mui/icons-material";
 import { Button, Grid, TextField, Typography, IconButton } from "@mui/material";
-import { useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { ImgGallery } from "../components";
 import { useForm } from '../../hooks/useForm';
 import { setActiveNote } from '../../store/journal/journalSlice';
 import { StartSaveNote } from '../../store/journal/thunk';
+import { SnackBarJournal } from '../components/SnackBarJournal';
 
 
 export const NoteView = () => {
@@ -14,13 +15,10 @@ export const NoteView = () => {
     const { active:note, messageSaved, isSaving } = useSelector( state => state.journal );
     const { body, title, date, onInputChange, formState } = useForm( note );
 
-
     const dateString = useMemo(() => {
         const newDate = new Date( date )
         const options = {weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric"};
-        // return newDate.toUTCString('es-Ar'); 
-        return newDate.toLocaleDateString('es-AR', options).toLocaleUpperCase()
-        ; 
+        return newDate.toLocaleDateString('es-AR', options).toLocaleUpperCase();
     },[date]);
 
     const fileInputRef = useRef();
@@ -29,13 +27,27 @@ export const NoteView = () => {
         dispatch( setActiveNote(formState) )
     }, [formState]);
 
+    const [notification, setNotification] = useState(false);
+
     const onSaveNote = () => {
         dispatch( StartSaveNote() )
-    }
-    
+        setNotification(true);
+    };
+
+    const onFileInputChange = ({ target }) => {
+        if (target.files === 0) return
+        // dispatch( startUploadingFiles( target ) )
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setNotification(false);
+    };
 
   return (
-    <Grid 
+    <Grid
         container
         direction='row'
         justifyContent='space-between'
@@ -46,15 +58,21 @@ export const NoteView = () => {
                 <Typography fontSize={ 39 } fontWeight='light'>{ dateString }</Typography>
             </Grid>
             <Grid item>
-                <input 
+                <input
                     type="file"
                     multiple
                     ref={ fileInputRef }
-                    // onChange={ onFileInputChange }
+                    onChange={ onFileInputChange }
                     style={{ display: 'none' }}
                 />
-                <Button 
-                        color="primary" 
+                <IconButton
+                        color='primary'
+                        disabled={isSaving}
+                        onClick={ () => fileInputRef.current.click() }>
+                    <UploadOutlined />
+                </IconButton>
+                <Button
+                        color="primary"
                         sx={{ padding: 2 }}
                         onClick= { onSaveNote }
                         >
@@ -66,7 +84,7 @@ export const NoteView = () => {
             </Grid>
             <Grid container>
 
-                <TextField 
+                <TextField
                     type="text"
                     variant="filled"
                     fullWidth
@@ -78,7 +96,7 @@ export const NoteView = () => {
                     sx={{ border: 'none', mb: 1 }}
                 />
 
-                <TextField 
+                <TextField
                     type="text"
                     variant="filled"
                     multiline
@@ -102,8 +120,10 @@ export const NoteView = () => {
                 </Button>
             </Grid>
 
-
             <ImgGallery />
+
+
+            <SnackBarJournal handleClose={handleClose} open={notification} action={"success"} msg={messageSaved} />
 
     </Grid>
   )
