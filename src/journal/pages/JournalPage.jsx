@@ -28,7 +28,7 @@ export const JournalPage = () => {
       
       <IconButton
         onClick={ onClickNewNote }
-        // disabled={ active }
+        disabled={ isSaving }
         size='large'
         sx={{
           color: 'white',

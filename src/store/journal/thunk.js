@@ -5,22 +5,19 @@ import { addNewEmptyNote,
     setNote,
     setSaving,
     updateNote,
+    setPhotosToActiveNote,
     deleteNote, 
     savingNewNote} from './journalSlice';
 import Swal from 'sweetalert2';
 import { LoadNotes } from '../../helpers/loadNotes';
 import journalApi from '../../api/journalApi';
 import { useId } from 'react';
-
+import { fileUpload } from '../../helpers/fileUpload';
 
 
 export const startNewNote = () => {
 
-    
-    
     return async( dispatch, getState ) => {
-
-        
 
         dispatch( savingNewNote() );
 
@@ -28,7 +25,8 @@ export const startNewNote = () => {
             title: '',
             body: '',
             date: new Date().getTime(),
-            id: new Date().getTime()
+            id: new Date().getTime(),
+            imageUrls:''
         };
 
         dispatch( addNewEmptyNote( newNote ) );
@@ -69,4 +67,25 @@ export const StartSaveNote = () => {
             console.log(error)
         }
     }
+};
+
+export const startUploadingFiles = ( files = [] ) => {
+    return async( dispatch ) => {
+
+        dispatch( setSaving() );
+        // await fileUpload( files[0] );
+        const fileUploadPromises = [];
+
+        for( const file of files  ) {
+            fileUploadPromises.push( fileUpload( file ) )
+        }
+
+        const photosUrls = await Promise.all( fileUploadPromises );
+        
+
+        dispatch( setPhotosToActiveNote( photosUrls ) );
+
+
+    }
+
 }

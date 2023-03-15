@@ -5,7 +5,7 @@ import { useMemo, useRef, useEffect, useState } from "react";
 import { ImgGallery } from "../components";
 import { useForm } from '../../hooks/useForm';
 import { setActiveNote } from '../../store/journal/journalSlice';
-import { StartSaveNote } from '../../store/journal/thunk';
+import { StartSaveNote, startUploadingFiles } from '../../store/journal/thunk';
 import { SnackBarJournal } from '../components/SnackBarJournal';
 
 
@@ -36,7 +36,7 @@ export const NoteView = () => {
 
     const onFileInputChange = ({ target }) => {
         if (target.files === 0) return
-        // dispatch( startUploadingFiles( target ) )
+        dispatch( startUploadingFiles( target.files ) )
     };
 
     const handleClose = (event, reason) => {
@@ -74,6 +74,7 @@ export const NoteView = () => {
                 <Button
                         color="primary"
                         sx={{ padding: 2 }}
+                        disabled={isSaving}
                         onClick= { onSaveNote }
                         >
                     <SaveOutlined sx={{ fontSize: 30, mr: 1 }}/>
