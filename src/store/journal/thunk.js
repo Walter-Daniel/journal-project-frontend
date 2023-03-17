@@ -121,4 +121,15 @@ export const startUploadingFiles = ( files = [] ) => {
 
     }
 
+};
+
+export const startDeletingNote = () => {
+    return async(dispatch, getState) => {
+        const {id} = getState().auth.user;
+        const {active:note} = getState().journal;
+
+        const { data } = await journalApi.delete(`/notes/${note.id}`);
+
+        dispatch( deleteNote(note.id) );
+    }
 }
