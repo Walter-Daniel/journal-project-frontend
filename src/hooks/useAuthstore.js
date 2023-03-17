@@ -4,6 +4,7 @@ import { checkingCredentials, clearErrorMsg, login, logout } from '../store/auth
 
 import Swal from 'sweetalert2';
 import { startLoadingNotes } from '../store/journal/thunk';
+import { clearNotesLogout } from '../store/journal/journalSlice';
 
 
 
@@ -84,6 +85,7 @@ export const useAuthStore = () => {
 
     const startLogout = () => {
         localStorage.clear();
+        dispatch( clearNotesLogout() );
         dispatch( logout() );
     };
 

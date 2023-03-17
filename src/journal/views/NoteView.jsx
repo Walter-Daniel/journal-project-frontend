@@ -5,7 +5,7 @@ import { useMemo, useRef, useEffect, useState } from "react";
 import { ImgGallery } from "../components";
 import { useForm } from '../../hooks/useForm';
 import { setActiveNote } from '../../store/journal/journalSlice';
-import { StartSaveNote, startUploadingFiles } from '../../store/journal/thunk';
+import { startDeletingNote, StartSaveNote, startUploadingFiles } from '../../store/journal/thunk';
 import { SnackBarJournal } from '../components/SnackBarJournal';
 
 
@@ -45,6 +45,10 @@ export const NoteView = () => {
         }
         setNotification(false);
     };
+
+    const onDelete = () => {
+       dispatch( startDeletingNote() ) 
+    }
 
   return (
     <Grid
@@ -112,7 +116,7 @@ export const NoteView = () => {
 
             <Grid container justifyContent='end'>
                 <Button
-                    // onClick={ onDelete }
+                    onClick={ onDelete }
                     sx={{ mt: 2 }}
                     color="error"
                 >
@@ -120,8 +124,8 @@ export const NoteView = () => {
                     Borrar
                 </Button>
             </Grid>
-
-            <ImgGallery />
+            
+            <ImgGallery images={ note.imageUrls } />
 
 
             <SnackBarJournal handleClose={handleClose} open={notification} action={"success"} msg={messageSaved} />
