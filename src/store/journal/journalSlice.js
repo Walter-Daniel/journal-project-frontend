@@ -1,22 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  // notes: [],
-  // actie: null
-
   isSaving: false,
   messageSaved: '',
   notes: [],
   active: null,
-//   active: {
-//     id: 'ABC',
-//     title: '',
-//     body: '',
-//     date: 12343,
-//     imageUrls: []
+};
 
-//   }
-}
 export const journalSlice = createSlice({
   name: 'journal',
   initialState,
@@ -27,7 +17,11 @@ export const journalSlice = createSlice({
     },
     setActiveNote: ( state, { payload } ) => {
       state.active = payload;
-      state.messageSaved = '';
+      if( !payload.id ) {
+        state.messageSaved = '';
+      }else {
+        state.messageSaved = `${ payload.title }, se ha guardado con éxito`;
+      }
     },
     savingNewNote: ( state ) => {
       state.isSaving = true;

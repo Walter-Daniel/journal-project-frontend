@@ -6,7 +6,7 @@ import { SideBarItem } from "./SideBarItem";
 export const SideBar = ({ drawerWidth }) => {
 
   const { user } = useAuthStore();
-  const { notes } = useSelector( state => state.journal )
+  const { notes, active } = useSelector( state => state.journal );
 
   return (
     <Box
@@ -32,7 +32,7 @@ export const SideBar = ({ drawerWidth }) => {
         <List key="nuevalista">
           {
             notes.map( note =>(
-              <SideBarItem key={note.id} { ...note }/>
+              <SideBarItem key={note.id} { ...note } noteActive={active}/>
             ) )
           }
         </List>

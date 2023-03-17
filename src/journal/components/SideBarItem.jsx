@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
-import { TurnedInNot } from "@mui/icons-material";
+import { TurnedInNot, TurnedIn } from "@mui/icons-material";
 import { Grid, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setActiveNote } from '../../store/journal/journalSlice';
 
-export const SideBarItem = ({ title, body, id, date, imageUrls = [] }) => {
+export const SideBarItem = ({ title, body, id, date, imageUrls = [], noteActive={} }) => {
 
   const dispatch = useDispatch();
-
+  
   const onClickNote = () => {
     dispatch( setActiveNote({ title, body, id, date, imageUrls }) );
   };
@@ -31,7 +31,9 @@ export const SideBarItem = ({ title, body, id, date, imageUrls = [] }) => {
     <ListItem key={ id } disablePadding >
         <ListItemButton onClick={ onClickNote }>
           <ListItemIcon>
-            <TurnedInNot />
+            {
+              ( noteActive === null || noteActive.id !== id  ) ? <TurnedInNot />:<TurnedIn />
+            }
           </ListItemIcon>
           <Grid container>
             <ListItemText  primary={ newTitle } />
