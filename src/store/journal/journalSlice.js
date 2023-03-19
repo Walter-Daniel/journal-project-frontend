@@ -17,11 +17,7 @@ export const journalSlice = createSlice({
     },
     setActiveNote: ( state, { payload } ) => {
       state.active = payload;
-      if( !payload.id ) {
-        state.messageSaved = '';
-      }else {
-        state.messageSaved = `${ payload.title }, se ha guardado con éxito`;
-      }
+      state.messageSaved = ''; 
     },
     savingNewNote: ( state ) => {
       state.isSaving = true;
@@ -43,6 +39,11 @@ export const journalSlice = createSlice({
       });
       state.messageSaved = `${ action.payload.title }, se ha guardado con éxito`;
     },
+    addNewNote: ( state, { payload } ) => {
+      state.isSaving = false,
+      state.notes.push( payload );
+      state.messageSaved = `${ payload.title }, se ha guardado con éxito`;
+    },
     setPhotosToActiveNote: ( state, action ) => {
       state.active.imageUrls = [ ...state.active.imageUrls, ...action.payload ];
       state.isSaving = false;
@@ -61,6 +62,7 @@ export const journalSlice = createSlice({
 })
 
 export const {  addNewEmptyNote,
+                addNewNote,
                 setActiveNote,
                 savingNewNote,
                 setNote,
