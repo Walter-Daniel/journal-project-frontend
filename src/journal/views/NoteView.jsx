@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { DeleteOutline, SaveOutlined, UploadOutlined } from "@mui/icons-material";
-import { Button, Grid, TextField, Typography, IconButton } from "@mui/material";
+import { Button, Grid, TextField, Typography, IconButton, Stack, Alert } from "@mui/material";
 import { useMemo, useRef, useEffect, useState } from "react";
 import { ImgGallery } from "../components";
 import { useForm } from '../../hooks/useForm';
@@ -48,6 +48,7 @@ export const NoteView = () => {
 
     const onDelete = () => {
        dispatch( startDeletingNote() ) 
+       setNotification(true);
     }
 
   return (
@@ -124,11 +125,7 @@ export const NoteView = () => {
                     Borrar
                 </Button>
             </Grid>
-            
-            <ImgGallery images={ note.imageUrls } />
-
-
-            <SnackBarJournal handleClose={handleClose} open={notification} action={"success"} msg={messageSaved} />
+            {/* <SnackBarJournal handleClose={handleClose} open={onSaveNote} onDelete={onDelete} action={"success"} msg={messageSaved} /> */}
 
     </Grid>
   )

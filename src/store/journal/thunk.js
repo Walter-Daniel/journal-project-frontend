@@ -6,12 +6,15 @@ import { addNewEmptyNote,
     setPhotosToActiveNote,
     deleteNote,
     addNewNote, 
+    onSaveNote,
     savingNewNote} from './journalSlice';
 
 import { LoadNotes } from '../../helpers/loadNotes';
 import journalApi from '../../api/journalApi';
 
 import { fileUpload } from '../../helpers/fileUpload';
+
+import Swal from 'sweetalert2';
 
 export const startLoadingNotes = () => {
     return async( dispatch, getState ) => {
@@ -44,13 +47,17 @@ export const StartSaveNote = () => {
             const id = data.note.id
             dispatch( addNewNote( {...note, id} ) );
             dispatch( setActiveNote( newNote ) );
+            dispatch( onSaveNote() );
+            Swal.fire('Carga exitosa', `Se ha guardado con exito la nota: ${note.title}` , 'success')
             return data
+            
         }
 
         const noteToBackend = { ...note };
         delete noteToBackend.id;
         const { data } = await journalApi.put(`/notes/${note.id}`, noteToBackend);
-        dispatch( updateNote( note ) );      
+        dispatch( updateNote( note ) );
+        Swal.fire('Edición exitosa', `Se ha editado con éxito la nota: ${note.title}` , 'success')    
     }
 };
 // export const StartSaveNote = () => {
@@ -89,25 +96,35 @@ export const StartSaveNote = () => {
 //             dispatch( updateNote( note ) );
 // }
 
-export const startUploadingFiles = ( files = [] ) => {
-    return async( dispatch ) => {
+// export const startUploadingFiles = ( files = [] ) => {
+//     return async( dispatch ) => {
 
-        dispatch( setSaving() );
-        const fileUploadPromises = [];
+//         dispatch( setSaving() );
+//         const fileUploadPromises = [];
 
-        for( const file of files  ) {
-            fileUploadPromises.push( fileUpload( file ) )
-        };
+//         for( const file of files  ) {
+//             fileUploadPromises.push( fileUpload( file ) )
+//         };
 
-        const photosUrls = await Promise.all( fileUploadPromises );
-        dispatch( setPhotosToActiveNote( photosUrls ) );
-    }
-};
+//         const photosUrls = await Promise.all( fileUploadPromises );
+//         dispatch( setPhotosToActiveNote( photosUrls ) );
+//     }
+// };
 
 export const startDeletingNote = () => {
     return async(dispatch, getState) => {
         const {active:note} = getState().journal;
         const { data } = await journalApi.delete(`/notes/${note.id}`);
         dispatch( deleteNote(note.id) );
+        Swal.fire('Nota eliminada', `Se ha eliminado se con éxito la nota` , 'success')    
+
+    }
+};
+
+export const startSavingImages = () => {
+    return async( dispatch, getState ) => {
+        const { active:note } = getState().journal;
+        const { data } = await journalApi.post(`/uploads/notes/${note.id}`, );
+        console.log(data)
     }
 }
