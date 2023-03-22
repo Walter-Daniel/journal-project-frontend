@@ -65,6 +65,7 @@ export const NoteView = () => {
             <Grid item>
                 <input
                     type="file"
+                    name='file'
                     multiple
                     ref={ fileInputRef }
                     onChange={ onFileInputChange }

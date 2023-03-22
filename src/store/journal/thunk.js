@@ -96,22 +96,34 @@ export const StartSaveNote = () => {
 //             dispatch( updateNote( note ) );
 // }
 
-// export const startUploadingFiles = ( files = [] ) => {
-//     return async( dispatch ) => {
+export const startUploadingFiles = ( files = [] ) => {
+    return async( dispatch, getState ) => {
 
-//         dispatch( setSaving() );
-//         const fileUploadPromises = [];
+        dispatch( setSaving() );
+        const {active:note} = getState().journal;
+        const fileUploadPromises = [];
+        const id = note.id
+        const images = fileUpload( files, id );
 
-//         for( const file of files  ) {
-//             fileUploadPromises.push( fileUpload( file ) )
-//         };
+        for( const image of images  ) {
+            fileUploadPromises.push( image.url )
+        };
+        
 
-//         const photosUrls = await Promise.all( fileUploadPromises );
-//         dispatch( setPhotosToActiveNote( photosUrls ) );
-//     }
-// };
+        // const { data } = await journalApi.post(`/uploads/notes/${note.id}`, files );
+        // console.log(data)
 
-export const startDeletingNote = () => {
+        // for( const file of files  ) {
+        //     fileUploadPromises.push( fileUpload( file ) )
+        // };
+
+        const photosUrls = await Promise.all( fileUploadPromises );
+        console.log(photosUrls, 'final final')
+        // dispatch( setPhotosToActiveNote( photosUrls ) );
+    }
+};
+
+export const startDeletingNote = (  ) => {
     return async(dispatch, getState) => {
         const {active:note} = getState().journal;
         const { data } = await journalApi.delete(`/notes/${note.id}`);
