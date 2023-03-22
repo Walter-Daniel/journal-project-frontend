@@ -1,13 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { DeleteOutline, SaveOutlined, UploadOutlined } from "@mui/icons-material";
-import { Button, Grid, TextField, Typography, IconButton, Stack, Alert } from "@mui/material";
+import { Button, Grid, TextField, Typography, IconButton } from "@mui/material";
 import { useMemo, useRef, useEffect, useState } from "react";
 import { ImgGallery } from "../components";
 import { useForm } from '../../hooks/useForm';
 import { setActiveNote } from '../../store/journal/journalSlice';
 import { startDeletingNote, StartSaveNote, startUploadingFiles } from '../../store/journal/thunk';
-import { SnackBarJournal } from '../components/SnackBarJournal';
-
 
 export const NoteView = () => {
 
@@ -27,11 +25,8 @@ export const NoteView = () => {
         dispatch( setActiveNote(formState) )
     }, [formState]);
 
-    const [notification, setNotification] = useState(false);
-
     const onSaveNote = () => {
         dispatch( StartSaveNote() )
-        setNotification(true);
     };
 
     const onFileInputChange = ({ target }) => {
@@ -39,17 +34,9 @@ export const NoteView = () => {
         dispatch( startUploadingFiles( target.files ) )
     };
 
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-        setNotification(false);
-    };
-
     const onDelete = () => {
        dispatch( startDeletingNote() ) 
-       setNotification(true);
-    }
+    };
 
   return (
     <Grid
@@ -126,8 +113,7 @@ export const NoteView = () => {
                     Borrar
                 </Button>
             </Grid>
-            {/* <SnackBarJournal handleClose={handleClose} open={onSaveNote} onDelete={onDelete} action={"success"} msg={messageSaved} /> */}
-
+            <ImgGallery images={note.imageUrls}/>
     </Grid>
   )
 }
