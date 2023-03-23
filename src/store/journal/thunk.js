@@ -101,25 +101,28 @@ export const startUploadingFiles = ( files = [] ) => {
 
         dispatch( setSaving() );
         const {active:note} = getState().journal;
-        const fileUploadPromises = [];
         const id = note.id
-        const images = fileUpload( files, id );
-
-        for( const image of images  ) {
-            fileUploadPromises.push( image.url )
-        };
-        
-
-        // const { data } = await journalApi.post(`/uploads/notes/${note.id}`, files );
-        // console.log(data)
-
-        // for( const file of files  ) {
-        //     fileUploadPromises.push( fileUpload( file ) )
-        // };
-
-        const photosUrls = await Promise.all( fileUploadPromises );
-        console.log(photosUrls, 'final final')
-        // dispatch( setPhotosToActiveNote( photosUrls ) );
+        const images = await fileUpload( files, id );
+        dispatch( setPhotosToActiveNote( images ) );
+        // if(!dispatch) {
+        //     Swal.fire({
+        //     title: 'Quieres salir sin guardar las fotos?',
+        //     text: "Al salir, no podras recuperarlas",
+        //     icon: 'warning',
+        //     showCancelButton: true,
+        //     confirmButtonColor: '#3085d6',
+        //     cancelButtonColor: '#d33',
+        //     confirmButtonText: 'Si, quiero salir!'
+        //   }).then((result) => {
+        //     if (result.isConfirmed) {
+        //       Swal.fire(
+        //         'Borradas!',
+        //         'Tus fotos no se han guardado.',
+        //         'success'
+        //       )
+        //     }
+        //   })
+        // }
     }
 };
 
@@ -132,11 +135,3 @@ export const startDeletingNote = (  ) => {
 
     }
 };
-
-export const startSavingImages = () => {
-    return async( dispatch, getState ) => {
-        const { active:note } = getState().journal;
-        const { data } = await journalApi.post(`/uploads/notes/${note.id}`, );
-        console.log(data)
-    }
-}

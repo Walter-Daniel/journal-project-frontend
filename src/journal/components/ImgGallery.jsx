@@ -20,7 +20,7 @@ export const ImgGallery = ({ images }) => {
       rowHeight={164}
     >
       {images.map((image) => (
-        <ImageListItem key={image} cols={image.cols || 1} rows={image.rows || 1}>
+        <ImageListItem key={image} cols={image.cols || 2} rows={image.rows || 2}>
           <img
             {...srcset(image, 121, image.rows, image.cols)}
             alt="imagen de la nota"
