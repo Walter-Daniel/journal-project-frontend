@@ -14,15 +14,16 @@ function srcset(image, size, rows = 1, cols = 1) {
 export const ImgGallery = ({ images }) => {
   return (
     <ImageList
-      sx={{ width: '100%', height: 500 }}
+      sx={{ width: '100%', height: 450 }}
       variant="quilted"
-      cols={6}
-      rowHeight={164}
+      cols={3}
+      rowHeight={300}
     >
       {images.map((image) => (
-        <ImageListItem key={image} cols={image.cols || 2} rows={image.rows || 2}>
+        <ImageListItem key={image}>
           <img
-            {...srcset(image, 121, image.rows, image.cols)}
+            src={`${image}?w=164&h=164&fit=crop&auto=format`}
+            srcSet={`${image}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
             alt="imagen de la nota"
             loading="lazy"
           />

@@ -7,6 +7,7 @@ export const SideBar = ({ drawerWidth }) => {
 
   const { user } = useAuthStore();
   const { notes, active } = useSelector( state => state.journal );
+  console.log(notes, 'notas inicio')
 
   return (
     <Box
