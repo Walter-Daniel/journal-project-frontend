@@ -31,6 +31,7 @@ export const useAuthStore = () => {
                 }) 
             );
             Swal.fire(`Hola ${ data.name }`, 'te damos la bienvenida!!!', 'success')
+            dispatch( startLoadingNotes() );
             
 
         } catch (error) {
@@ -76,7 +77,6 @@ export const useAuthStore = () => {
                     id: data.id
                 }) 
             );
-            dispatch( startLoadingNotes() );
         } catch (error) {
             localStorage.clear();
             dispatch( logout() );
