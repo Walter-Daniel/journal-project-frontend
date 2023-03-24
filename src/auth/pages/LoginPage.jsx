@@ -1,8 +1,6 @@
-import { Google } from '@mui/icons-material';
-import { Button, Grid, Link, TextField, Typography } from '@mui/material';
+import { Button, Grid, Link, TextField } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
-import { StartGoogleSignIn } from '../../store/auth/thunk';
 
 
 import { useForm, Controller } from "react-hook-form";
@@ -31,19 +29,12 @@ const schema = yup.object().shape({
 
 export const LoginPage = () => {
 
-  const dispatch = useDispatch();
-
   const { startLogin, errorMessage } = useAuthStore();
 
   const { control, handleSubmit, formState:{ errors } } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = ( { email, password }  ) => {
     startLogin({ email, password });
-  };
-
-  const onGoogleSignIn = () => {
-    console.log('onGoogleSignIn');
-    dispatch( StartGoogleSignIn() );
   };
 
   useEffect(() => {
@@ -103,15 +94,9 @@ export const LoginPage = () => {
             </Grid>
 
             <Grid container spacing={ 2 } sx={{ mb: 2, mt: 1 }}>
-              <Grid item xs={ 12 } sm={ 6 }>
+              <Grid item xs={ 12 } >
                 <Button type='submit' variant='contained' fullWidth>
                   Login
-                </Button>
-              </Grid>
-              <Grid item xs={ 12 } sm={ 6 }>
-                <Button variant='contained' onClick={ onGoogleSignIn } fullWidth>
-                  <Google />
-                  <Typography sx={{ ml:1 }}> Google </Typography>
                 </Button>
               </Grid>
             </Grid>
