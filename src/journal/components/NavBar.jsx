@@ -1,6 +1,6 @@
 import { MenuOutlined, LogoutOutlined } from "@mui/icons-material";
 import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
-import { useAuthStore } from "../../hooks/useAuthStore";
+import { useAuthStore } from "../../hooks/useAuthstore";
 
 
 export const NavBar = ({ drawerWidth }) => {
