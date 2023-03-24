@@ -77,6 +77,7 @@ export const useAuthStore = () => {
                     id: data.id
                 }) 
             );
+            dispatch( startLoadingNotes() );
         } catch (error) {
             localStorage.clear();
             dispatch( logout() );
