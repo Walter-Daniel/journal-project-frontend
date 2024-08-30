@@ -1,44 +1,35 @@
-import { useMemo } from 'react';
-import { TurnedInNot, TurnedIn } from "@mui/icons-material";
-import { Grid, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import { useDispatch, useSelector } from 'react-redux';
-import { setActiveNote } from '../../store/journal/journalSlice';
+import { useMemo } from 'react'
+import { useDispatch } from 'react-redux'
+import { Grid, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { TurnedInNot } from '@mui/icons-material';
+import { setActiveNote } from '../../store/journal';
 
-export const SideBarItem = ({ title, body, id, date, imageUrls = [], noteActive={} }) => {
 
-  const dispatch = useDispatch();
-  
-  const onClickNote = () => {
-    dispatch( setActiveNote({ title, body, id, date, imageUrls }) );
-  };
+export const SideBarItem = ({ title = '', body, id, date, imageUrls = [] }) => {
 
-  const newTitle = useMemo( () => {
-    return title.length > 17
-        ? title.substring(0,17) + '...'
-        : title;
-  }, [ title ]);
+    const dispatch = useDispatch();
 
-  const dateString = useMemo(() => {
-    const newDate = new Date( date )
-    const options = {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric"};
-    return newDate.toLocaleDateString('es-AR', options)
-    ; 
-},[date]);
+    const onClickNote = () => {
+        dispatch( setActiveNote({ title, body, id, date, imageUrls }) )
+    }
 
-  
+
+    const newTitle = useMemo( () => {
+        return title.length > 17
+            ? title.substring(0,17) + '...'
+            : title;
+    },[ title ])
 
   return (
-    <ListItem key={ id } disablePadding >
+    <ListItem disablePadding>
         <ListItemButton onClick={ onClickNote }>
-          <ListItemIcon>
-            {
-              ( noteActive === null || noteActive.id !== id  ) ? <TurnedInNot />:<TurnedIn />
-            }
-          </ListItemIcon>
-          <Grid container>
-            <ListItemText  primary={ newTitle } />
-            <ListItemText secondary={ dateString } />
-          </Grid>
+            <ListItemIcon>
+                <TurnedInNot />
+            </ListItemIcon>
+            <Grid container>
+                <ListItemText primary={ newTitle } />
+                <ListItemText secondary={ body } />
+            </Grid>
         </ListItemButton>
     </ListItem>
   )

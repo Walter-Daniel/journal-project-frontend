@@ -1,37 +1,38 @@
-import { createSlice } from '@reduxjs/toolkit'
-const initialState = {
-  status: 'non-authenticated', //not-authenticated, 'authenticated,
-  user: {},
-  errorMessage: undefined,
-}
+import { createSlice } from '@reduxjs/toolkit';
+
 export const authSlice = createSlice({
-  name: 'auth',
-  initialState,
-  reducers: {
-
-    checkingCredentials: (state) => {
-      state.status = 'checking';
-      state.user= {};
-      state.errorMessage = undefined;
+    name: 'auth',
+    initialState: {
+        status: 'checking', // 'checking', 'not-authenticated', 'authenticated'
+        uid: null,
+        email: null,
+        displayName: null,
+        photoURL: null,
+        errorMessage: null,
     },
-
-    login: ( state, { payload } ) => {
-      state.status= 'authenticated'; //not-authenticated, 'authenticated,
-      state.user = payload;
-      state.errorMessage = undefined;
-    },
-
-    logout: ( state, {payload} ) => {
-      state.status= 'non-authenticated'; //not-authenticated, 'authenticated,
-      state.user= {};
-      state.errorMessage = payload;
-    },
-    
-    clearErrorMsg: ( state ) => {
-      state.errorMessage = undefined;
+    reducers: {
+        login: ( state, { payload } ) => {
+            state.status = 'authenticated', // 'checking', 'not-authenticated', 'authenticated'
+            state.uid = payload.uid;
+            state.email = payload.email;
+            state.displayName = payload.displayName;
+            state.photoURL = payload.photoURL;
+            state.errorMessage = null;
+        },
+        logout: ( state, { payload } ) => {
+            state.status = 'not-authenticated', // 'checking', 'not-authenticated', 'authenticated'
+            state.uid = null;
+            state.email = null;
+            state.displayName = null;
+            state.photoURL = null;
+            state.errorMessage = payload?.errorMessage;
+        },
+        checkingCredentials: (state) => {
+            state.status = 'checking';
+        }
     }
-    
-  },
-})
+});
 
-export const { login, logout, checkingCredentials, clearErrorMsg } = authSlice.actions
+
+// Action creators are generated for each case reducer function
+export const { login, logout, checkingCredentials } = authSlice.actions;

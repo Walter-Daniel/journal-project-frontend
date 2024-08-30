@@ -1,105 +1,102 @@
-import { Button, Grid, Link, TextField } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
-
-
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
+import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
+import { Google } from '@mui/icons-material';
 
 import { AuthLayout } from '../layout/AuthLayout';
-import { useAuthStore } from '../../hooks';
-import { useEffect } from 'react';
-import Swal from 'sweetalert2';
 
-const passwordPattern =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+import { useForm } from '../../hooks';
+import { startGoogleSignIn, startLoginWithEmailPassword } from '../../store/auth';
 
+const formData = {
+  email: '',
+  password: ''
+}
 
-const schema = yup.object().shape({             
-  email: yup.string()
-                .required('Campo requerido')
-                .max(30, 'El email debe tener un max. de 30 carácteres')               
-                .email('El email no es válido'),
-  password: yup.string()
-                .required('Campo requerido')
-                .min(6, 'La contraseña debe tener un min. 6 caracteres')
-                .max(12, 'La contraseña debe tener un max. de 12 caracteres')
-                .matches(passwordPattern, 'La contraseña debe contener por lo menos una letra mayúscula, una minúscula, un número y un caracter especial.')
-}).required();
 
 export const LoginPage = () => {
 
-  const { startLogin, errorMessage } = useAuthStore();
+  const { status, errorMessage } = useSelector( state => state.auth );
 
-  const { control, handleSubmit, formState:{ errors } } = useForm({ resolver: yupResolver(schema) });
+  const dispatch = useDispatch();
+  const { email, password, onInputChange } = useForm(formData);
 
-  const onSubmit = ( { email, password }  ) => {
-    startLogin({ email, password });
-  };
+  const isAuthenticating = useMemo( () => status === 'checking', [status]);
 
-  useEffect(() => {
-    if( errorMessage !== undefined ) {
-      Swal.fire('Error en la autenticación', errorMessage, 'error')
-    }
-  }, [errorMessage])
-  
+  const onSubmit = ( event ) => {
+    event.preventDefault();
+    dispatch( startLoginWithEmailPassword({ email, password }) );
+  }
+
+  const onGoogleSignIn = () => {
+    dispatch( startGoogleSignIn() );
+  }
+
 
   return (
-    <AuthLayout title='Login'>
-      <form onSubmit={handleSubmit(onSubmit)} className=''>
+    <AuthLayout title="Login">
+      <form onSubmit={ onSubmit } className='animate__animated animate__fadeIn animate__faster'>
           <Grid container>
-
             <Grid item xs={ 12 } sx={{ mt: 2 }}>
-
-            <Controller
+              <TextField 
+                label="Correo" 
+                type="email" 
+                placeholder='correo@google.com' 
+                fullWidth
                 name="email"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    label="Correo" 
-                    fullWidth
-                    name='email'
-                    placeholder='martin@email'
-                    error={Boolean(errors.email)}
-                    helperText={errors.email?.message}
-                    {...field}
-                  />
-                  
-                )}
-            />
-
+                value={ email }
+                onChange={ onInputChange }
+              />
             </Grid>
 
             <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              
-            <Controller
+              <TextField 
+                label="Contraseña" 
+                type="password" 
+                placeholder='Contraseña' 
+                fullWidth
                 name="password"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    label="Contraseña" 
-                    type="password" 
-                    placeholder='contraseña'
-                    fullWidth
-                    name='password'
-                    error={Boolean(errors.password)}
-                    helperText={errors.password?.message}
-                    {...field}
-                  />
-                )}
+                value={ password }
+                onChange={ onInputChange }
               />
-
             </Grid>
 
+
+            <Grid 
+              container
+              display={ !!errorMessage ? '': 'none' }
+              sx={{ mt: 1 }}>
+              <Grid 
+                  item 
+                  xs={ 12 }
+                >
+                <Alert severity='error'>{ errorMessage }</Alert>
+              </Grid>
+            </Grid>
+            
             <Grid container spacing={ 2 } sx={{ mb: 2, mt: 1 }}>
-              <Grid item xs={ 12 } >
-                <Button type='submit' variant='contained' fullWidth>
+              <Grid item xs={ 12 } sm={ 6 }>
+                <Button
+                  disabled={ isAuthenticating }
+                  type="submit" 
+                  variant='contained' 
+                  fullWidth>
                   Login
                 </Button>
               </Grid>
+              <Grid item xs={ 12 } sm={ 6 }>
+                <Button
+                   disabled={ isAuthenticating }
+                   variant='contained' 
+                   fullWidth
+                   onClick={ onGoogleSignIn }>
+                  <Google />
+                  <Typography sx={{ ml: 1 }}>Google</Typography>
+                </Button>
+              </Grid>
             </Grid>
+
 
             <Grid container direction='row' justifyContent='end'>
               <Link component={ RouterLink } color='inherit' to="/auth/register">
@@ -108,7 +105,10 @@ export const LoginPage = () => {
             </Grid>
 
           </Grid>
+
+
         </form>
+
     </AuthLayout>
   )
 }

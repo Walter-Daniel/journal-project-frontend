@@ -1,190 +1,128 @@
-import { Button, Grid, Link, TextField, Typography } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
+import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { AuthLayout } from '../layout/AuthLayout';
+import { useForm } from '../../hooks';
 
-import { useEffect } from 'react';
-import { useAuthStore } from '../../hooks';
-import Swal from 'sweetalert2';
+import { startCreatingUserWithEmailPassword } from '../../store/auth';
 
+const formData = {
+  email: '',
+  password: '',
+  displayName: ''
+}
 
-const namePattern = /^[a-zA-ZÀ-ÿ\s]{1,40}$/;
-const passwordPattern =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-
-const schema = yup.object().shape({
-  name: yup.string()
-                .required('Campo requerido')
-                .matches(namePattern, 'Este campo solo puede contener letras y espacios')
-                .min(2, 'El nombre debe tener un min. de 2 caracteres')
-                .max(15, 'El nombre debe tener un max. de 20 caracteres'),            
-  surname: yup.string()
-                .required('Campo requerido')
-                .matches(namePattern, 'Este campo solo puede contener letras y espacios')
-                .min(2, 'El apellido debe tener un min. de 2 caracteres')
-                .max(15, 'El apellido debe tener un max. de 20 caracteres'),               
-  email: yup.string()
-                .required('Campo requerido')
-                .max(30, 'El email debe tener un max. de 30 carácteres')               
-                .email('El email no es válido'),
-  password: yup.string()
-                .required('Campo requerido')
-                .min(6, 'La contraseña debe tener un min. 6 caracteres')
-                .max(12, 'La contraseña debe tener un max. de 12 caracteres')
-                .matches(passwordPattern, 'La contraseña debe contener por lo menos una letra mayúscula, una minúscula, un número y un caracter especial.'),
-  confirmPassword: yup.string()
-                .required('Campo requerido')
-                .oneOf([yup.ref('password'), null], 'Las contraseñas no coinciden'),
-}).required();
+const formValidations = {
+  email: [ (value) => value.includes('@'), 'El correo debe de tener una @'],
+  password: [ (value) => value.length >= 6, 'El password debe de tener más de 6 letras.'],
+  displayName: [ (value) => value.length >= 1, 'El nombre es obligatorio.'],
+}
 
 export const RegisterPage = () => {
 
-  const { control, handleSubmit, formState:{ errors }, reset } = useForm({
-    resolver: yupResolver(schema)
-  });
+  const dispatch = useDispatch();
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
-  const { startRegister, errorMessage } = useAuthStore();
+  const { status, errorMessage } = useSelector( state => state.auth );
+  const isCheckingAuthentication = useMemo( () => status === 'checking', [status]);
 
-  const onSubmit = ( {name, surname, email, password} ) => {
-    startRegister({ name, surname, email, password });
-  };
+  const { 
+    formState, displayName, email, password, onInputChange,
+    isFormValid, displayNameValid, emailValid, passwordValid, 
+  } = useForm( formData, formValidations );
 
-  useEffect(() => {
-    if( errorMessage !== undefined ) {
-      Swal.fire('Error en el Registro', errorMessage, 'error')
-    }
-  }, [errorMessage]);
-  
- 
+  const onSubmit = ( event ) => {
+    event.preventDefault();
+    setFormSubmitted(true);
+
+    if ( !isFormValid ) return;
+
+    dispatch( startCreatingUserWithEmailPassword(formState) );
+  }
+
   return (
-    <AuthLayout title='Register'>
-      <form onSubmit={handleSubmit(onSubmit)} >
+    <AuthLayout title="Crear cuenta">
+
+      <form onSubmit={ onSubmit } className='animate__animated animate__fadeIn animate__faster'>
           <Grid container>
-
+           
             <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <Controller
-                name="name"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    label="Nombre(s)"
-                    fullWidth
-                    type="text" 
-                    placeholder='Martín'
-                    name='name'
-                    inputProps={{ maxLength: 15 }}
-                    error={Boolean(errors.name)}
-                    helperText={errors.name?.message}
-                    {...field}
-                  />
-                )}
+              <TextField 
+                label="Nombre completo" 
+                type="text" 
+                placeholder='Nombre completo' 
+                fullWidth
+                name="displayName"
+                value={ displayName }
+                onChange={ onInputChange }
+                error={ !!displayNameValid && formSubmitted }
+                helperText={ displayNameValid }
               />
             </Grid>
 
             <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <Controller
-                name="surname"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    label="Apellido(s)" 
-                    type="text" 
-                    placeholder='Robles'
-                    fullWidth
-                    name='surname'
-                    error={Boolean(errors.surname)}
-                    helperText={errors.surname?.message}
-                    {...field}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <Controller
+              <TextField 
+                label="Correo" 
+                type="email" 
+                placeholder='correo@google.com' 
+                fullWidth
                 name="email"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    label="Correo" 
-                    fullWidth
-                    name='email'
-                    placeholder='martin@email'
-                    error={Boolean(errors.email)}
-                    helperText={errors.email?.message}
-                    {...field}
-                  />
-                  
-                )}
-                rules={{ validate: (value) => schema.validateSync({ email: value }) }}
+                value={ email }
+                onChange={ onInputChange }
+                error={ !!emailValid && formSubmitted }
+                helperText={ emailValid }
               />
             </Grid>
 
             <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <Controller
+              <TextField 
+                label="Contraseña" 
+                type="password" 
+                placeholder='Contraseña' 
+                fullWidth
                 name="password"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    label="Contraseña" 
-                    type="password" 
-                    placeholder='contraseña'
-                    fullWidth
-                    name='password'
-                    error={Boolean(errors.password)}
-                    helperText={errors.password?.message}
-                    {...field}
-                  />
-                )}
+                value={ password }
+                onChange={ onInputChange }
+                error={ !!passwordValid && formSubmitted  }
+                helperText={ passwordValid }
               />
             </Grid>
-
-            <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <Controller
-                name="confirmPassword"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    label="Contraseña" 
-                    type="password" 
-                    placeholder='contraseña'
-                    fullWidth
-                    name='password'
-                    error={Boolean(errors.confirmPassword)}
-                    helperText={errors.confirmPassword?.message}
-                    {...field}
-                  />
-                )}
-              />
-            </Grid>
-
-
+            
             <Grid container spacing={ 2 } sx={{ mb: 2, mt: 1 }}>
+              
+              <Grid 
+                item 
+                xs={ 12 }
+                display={ !!errorMessage ? '': 'none' }
+              >
+                <Alert severity='error'>{ errorMessage }</Alert>
+              </Grid>
 
               <Grid item xs={ 12 }>
-                <Button variant='contained' fullWidth type='submit'>
+                <Button 
+                  disabled={ isCheckingAuthentication }
+                  type="submit"
+                  variant='contained' 
+                  fullWidth>
                   Crear cuenta
                 </Button>
               </Grid>
-
             </Grid>
 
+
             <Grid container direction='row' justifyContent='end'>
-              <Typography sx={{ mr: 1 }}>¿Ya tienes una cuenta?</Typography>
+              <Typography sx={{ mr: 1 }}>¿Ya tienes cuenta?</Typography>
               <Link component={ RouterLink } color='inherit' to="/auth/login">
-                Ingresar
+                ingresar
               </Link>
             </Grid>
 
           </Grid>
+
+
         </form>
+
     </AuthLayout>
   )
 }

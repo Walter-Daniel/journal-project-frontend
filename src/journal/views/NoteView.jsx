@@ -1,101 +1,114 @@
+import { useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DeleteOutline, SaveOutlined, UploadOutlined } from "@mui/icons-material";
-import { Button, Grid, TextField, Typography, IconButton } from "@mui/material";
-import { useMemo, useRef, useEffect, useState } from "react";
-import { ImgGallery } from "../components";
+
+import { DeleteOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material';
+import { Button, Grid, IconButton, TextField, Typography } from '@mui/material';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.css';
+
 import { useForm } from '../../hooks/useForm';
-import { setActiveNote } from '../../store/journal/journalSlice';
-import { startDeletingNote, StartSaveNote, startUploadingFiles } from '../../store/journal/thunk';
+import { ImageGallery } from '../components'
+import { setActiveNote, startDeletingNote, startSaveNote, startUploadingFiles } from '../../store/journal';
+
 
 export const NoteView = () => {
 
     const dispatch = useDispatch();
     const { active:note, messageSaved, isSaving } = useSelector( state => state.journal );
+
     const { body, title, date, onInputChange, formState } = useForm( note );
 
     const dateString = useMemo(() => {
-        const newDate = new Date( date )
-        const options = {weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric"};
-        return newDate.toLocaleDateString('es-AR', options).toLocaleUpperCase();
-    },[date]);
+        const newDate = new Date( date );
+        return newDate.toUTCString();
+    }, [date])
 
     const fileInputRef = useRef();
 
     useEffect(() => {
-        dispatch( setActiveNote(formState) )
-    }, [formState]);
+        dispatch( setActiveNote(formState) );
+    }, [formState])
+
+    useEffect(() => {
+      if ( messageSaved.length > 0 ) {
+          Swal.fire('Nota actualizada', messageSaved, 'success');
+      }
+    }, [messageSaved])
+    
+    
 
     const onSaveNote = () => {
-        dispatch( StartSaveNote() )
-    };
+        dispatch( startSaveNote() );
+    }
 
     const onFileInputChange = ({ target }) => {
-        if (target.files === 0) return
-        dispatch( startUploadingFiles( target.files ) )
-    };
+        if( target.files === 0 ) return;
+        dispatch( startUploadingFiles( target.files ) );
+    }
 
     const onDelete = () => {
-       dispatch( startDeletingNote() ) 
-    };
-
-  return (
-    <Grid
-        container
-        direction='row'
-        justifyContent='space-between'
-        className='box-shadow animate__animated animate__fadeIn animate__faster'
-        sx={{ mb:1 }}
+        dispatch( startDeletingNote() );
+    }
+    return (
+        <Grid 
+            container 
+            direction='row' 
+            justifyContent='space-between' 
+            alignItems='center' 
+            sx={{ mb: 1 }}
+            className='animate__animated animate__fadeIn animate__faster'
         >
             <Grid item>
-                <Typography fontSize={ 39 } fontWeight='light'>{ dateString }</Typography>
+                <Typography fontSize={ 39 } fontWeight='light' >{ dateString }</Typography>
             </Grid>
             <Grid item>
-                <input
+
+                <input 
                     type="file"
-                    name='file'
                     multiple
                     ref={ fileInputRef }
                     onChange={ onFileInputChange }
                     style={{ display: 'none' }}
                 />
+
                 <IconButton
-                        color='primary'
-                        disabled={isSaving}
-                        onClick={ () => fileInputRef.current.click() }>
+                    color="primary"
+                    disabled={ isSaving }
+                    onClick={ () => fileInputRef.current.click() }
+                >
                     <UploadOutlined />
                 </IconButton>
-                <Button
-                        color="primary"
-                        sx={{ padding: 2 }}
-                        disabled={isSaving}
-                        onClick= { onSaveNote }
-                        >
-                    <SaveOutlined sx={{ fontSize: 30, mr: 1 }}/>
-                    <Typography>
-                        Guardar
-                    </Typography>
+                
+                <Button 
+                    disabled={ isSaving }
+                    onClick={ onSaveNote }
+                    color="primary" 
+                    sx={{ padding: 2 }}
+                >
+                    <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
+                    Guardar
                 </Button>
             </Grid>
-            <Grid container>
 
-                <TextField
+            <Grid container>
+                <TextField 
                     type="text"
                     variant="filled"
                     fullWidth
                     placeholder="Ingrese un título"
                     label="Título"
+                    sx={{ border: 'none', mb: 1 }}
                     name="title"
                     value={ title }
                     onChange={ onInputChange }
-                    sx={{ border: 'none', mb: 1 }}
                 />
 
-                <TextField
+                <TextField 
                     type="text"
                     variant="filled"
-                    multiline
                     fullWidth
-                    placeholder="¿Qué sucedió el día de hoy?"
+                    multiline
+                    placeholder="¿Qué sucedió en el día de hoy?"
                     minRows={ 5 }
                     name="body"
                     value={ body }
@@ -113,7 +126,11 @@ export const NoteView = () => {
                     Borrar
                 </Button>
             </Grid>
-            <ImgGallery images={note.imageUrls}/>
-    </Grid>
-  )
+
+
+            {/* Image gallery */}
+            <ImageGallery images={ note.imageUrls } />
+
+        </Grid>
+    )
 }

@@ -1,30 +1,29 @@
-import journalApi from "../api/journalApi";
 
-export const fileUpload = async(files, id) => {
 
-    if( !files ) throw new Error( 'No tenemos ningun archivo a subir' );
+export const fileUpload = async( file ) => {
+    if ( !file ) return null;
+
+    const cloudUrl = 'https://api.cloudinary.com/v1_1/journal-project/upload';
+
     const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-        formData.append('file', files[i]);
-    };
+    formData.append('upload_preset','journalProject');
+    formData.append('file', file );
 
     try {
-
-        const { data } = await journalApi.post(`/uploads/notes/${id}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-              },
+ 
+        const resp = await fetch( cloudUrl, {
+            method: 'POST',
+            body: formData
         });
-        
 
-        const imageUrl = data.result.map( image => {
-            return image.url
-        });  
 
-        return imageUrl;
-        
+        if ( !resp.ok ) throw new Error('No se pudo subir imagen')
+        const cloudResp = await resp.json();
+
+        return cloudResp.secure_url;
+
     } catch (error) {
-        throw new Error(error)
+        return null
     }
 
 }

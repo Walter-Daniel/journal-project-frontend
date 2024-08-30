@@ -1,45 +1,43 @@
-import { useAuthStore } from "../../hooks/useAuthstore";
-import { Box, Divider, Drawer, List, Toolbar, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
-import { SideBarItem } from "./SideBarItem";
+import { Box, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from '@mui/material'
+import { TurnedInNot } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { SideBarItem } from './';
 
-export const SideBar = ({ drawerWidth }) => {
+export const SideBar = ({ drawerWidth = 240 }) => {
 
-  const { user } = useAuthStore();
-  const { notes, active } = useSelector( state => state.journal );
-  console.log(notes, 'notas inicio')
+    const { displayName } = useSelector( state => state.auth );
+    const { notes } = useSelector( state => state.journal );
 
-  return (
-    <Box
-        component='nav'
-        className="animate__animated animate__fadeIn animate__faster"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-    >
-      <Drawer
-          variant="permanent"
-          open
-          sx={{
-            display: {xs: 'block'},
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
-          }}
-      >
-        <Toolbar>
-          <Typography variant='h6' noWrap component='div' >
-          { user.name }
-          </Typography>
-        </Toolbar>
-        <Divider />
+    return (
+        <Box
+            component='nav'
+            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        >
+            <Drawer
+                variant='permanent' // temporary
+                open
+                sx={{ 
+                    display: { xs: 'block' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
+                }}
+            >
+                <Toolbar>
+                    <Typography variant='h6' noWrap component='div'>
+                        { displayName }
+                    </Typography>
+                </Toolbar>
+                <Divider />
 
-        <List key="nuevalista">
-          {
-            notes.map( note =>(
-              <SideBarItem key={note.id} { ...note } noteActive={active}/>
-            ) )
-          }
-        </List>
+                <List>
+                    {
+                        notes.map( note => (
+                            <SideBarItem key={ note.id } { ...note } />
+                        ))
+                    }
+                </List>
 
-      </Drawer>
-      
-    </Box>
-  )
+            </Drawer>
+
+        </Box>
+    )
 }

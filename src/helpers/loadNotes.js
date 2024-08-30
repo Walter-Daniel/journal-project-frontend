@@ -1,12 +1,17 @@
-import journalApi from "../api/journalApi";
+import { collection, getDocs } from 'firebase/firestore/lite';
+import { FirebaseDB } from '../firebase/config';
 
-export const LoadNotes = async(id) => {  
 
-    try {
-        const { data } = await journalApi.get(`/notes/${id}`);
-        return data.notes
-    } catch (error) {
-        console.log('error al obtener las notas')
-    }
+export const loadNotes = async( uid = '') => {
+    if ( !uid ) throw new Error('El UID del usuario no existe');
+
+    const collectionRef = collection( FirebaseDB, `${ uid }/journal/notes` );
+    const docs = await getDocs(collectionRef);
+
+    const notes = [];
+    docs.forEach( doc => {
+        notes.push({ id: doc.id, ...doc.data() });
+    });
     
+    return notes;
 }
