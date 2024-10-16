@@ -14,11 +14,14 @@ export const SideBarItem = ({ title = '', body, id, date, imageUrls = [] }) => {
     }
 
 
-    const newTitle = useMemo( () => {
-        return title.length > 17
-            ? title.substring(0,17) + '...'
-            : title;
-    },[ title ])
+    const refactor = (text) => {
+        const newText = useMemo( () => {
+            return text.length > 17
+                ? text.substring(0,17) + '...'
+                : text;
+        },[ text ])
+        return newText;
+    }
 
   return (
     <ListItem disablePadding>
@@ -26,9 +29,9 @@ export const SideBarItem = ({ title = '', body, id, date, imageUrls = [] }) => {
             <ListItemIcon>
                 <TurnedInNot />
             </ListItemIcon>
-            <Grid container>
-                <ListItemText primary={ newTitle } />
-                <ListItemText secondary={ body } />
+            <Grid container style={{display: 'flex', flexDirection: 'column'}}>
+                <ListItemText primary={ refactor(title) } />
+                <ListItemText secondary={ refactor(body) } />
             </Grid>
         </ListItemButton>
     </ListItem>
